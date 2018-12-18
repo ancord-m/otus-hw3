@@ -15,7 +15,8 @@ set(TESTS_LIST
 set(SRC_DIR src)
 
 set(SRC_LIST
-		${SRC_DIR}/main.cpp		
+		${SRC_DIR}/main.cpp	
+		${SRC_DIR}/map_allocator.cpp	
    )
 
 find_package(Boost COMPONENTS unit_test_framework REQUIRED)
