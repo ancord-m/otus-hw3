@@ -6,24 +6,13 @@ project(allocator VERSION 0.0.$ENV{TRAVIS_BUILD_NUMBER})
 
 set(INCLUDE_DIR include)
 
-set(TESTS_DIR test)
-
-set(TESTS_LIST	
-		${TESTS_DIR}
-   )
-
 set(SRC_DIR src)
 
 set(SRC_LIST
-		${SRC_DIR}/main.cpp	
-		${SRC_DIR}/map_allocator.cpp	
+		${SRC_DIR}/main.cpp
    )
 
-find_package(Boost COMPONENTS unit_test_framework REQUIRED)
-
 add_executable(allocator ${SRC_LIST})
-
-#add_executable(bulk_tests ${TESTS_LIST} ${SRC_DIR}/command_collector.cpp)
 
 set_target_properties(allocator PROPERTIES
 	CXX_STANDARD 14

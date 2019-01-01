@@ -1,10 +1,15 @@
 #include <iostream>
-#include <vector>
+#include <map>
 #include "map_allocator.h"
+
+
+
 
 int main(int argc, char *argv[])
 {
-	auto v = std::vector<int, MapAllocator<int>>{};
+	auto m = std::map<int, int, MapAllocator<int>>{};
+
+	m.insert( std::pair<int, int>{2, 3});
 
 	return 0;
 }
