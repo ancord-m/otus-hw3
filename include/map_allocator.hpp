@@ -8,6 +8,12 @@ struct MapAllocator
 	using pointer    = T*;
 	using reference  = T&;
 
+	template<typename U>
+	struct rebind
+	{
+		typedef MapAllocator<U> other;
+	};
+
 	pointer allocate(std::size_t n)
 	{
 		std::cout << __PRETTY_FUNCTION__ << std::endl;
@@ -22,21 +28,21 @@ struct MapAllocator
 	}
 
 
-	//template <typename U, typename ...Args>
-	//void construct(U* p, Args&&... args)
-	template <typename U, typename X>
-	void construct(U* p, X x)
+	template <typename U, typename ...Args>
+	void construct(U* p, Args&&... args)
+	//template <typename U, typename X>
+	//void construct(U* p, X x)
 	{
 		std::cout << __PRETTY_FUNCTION__ << std::endl;
-		//new(p) T(std::forward<Args>(args)...);
-		new(p) T(std::forward<X>(x));
+	//	new(p) T(std::forward<Args>(args)...);
+	//	new(p) T(std::forward<X>(x));
 
 	}
 
 	void destroy(pointer p)
 	{
 		std::cout << __PRETTY_FUNCTION__ << std::endl;
-		p->~T();
+		//p->~T();
 	}
 
 	void deallocate(pointer p, std::size_t n)
