@@ -8,17 +8,11 @@ struct MapAllocator
 	using pointer    = T*;
 	using reference  = T&;
 
-<<<<<<< HEAD
-	template <typename T>
-	struct rebind
-	{
-		typedef allocator<T> other;
-=======
+
 	template<typename U>
 	struct rebind
 	{
 		typedef MapAllocator<U> other;
->>>>>>> refs/remotes/origin/master
 	};
 
 	pointer allocate(std::size_t n)
