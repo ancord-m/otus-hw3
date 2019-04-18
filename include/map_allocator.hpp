@@ -8,15 +8,22 @@ struct MapAllocator
 	using pointer    = T*;
 	using reference  = T&;
 
+<<<<<<< HEAD
 	template <typename T>
 	struct rebind
 	{
 		typedef allocator<T> other;
+=======
+	template<typename U>
+	struct rebind
+	{
+		typedef MapAllocator<U> other;
+>>>>>>> refs/remotes/origin/master
 	};
 
 	pointer allocate(std::size_t n)
 	{
-		std::cout << __PRETTY_FUNCTION__ << std::endl;
+		std::cout << __PRETTY_FUNCTION__ << std::endl << std::endl;
 		auto p = std::malloc(n * sizeof(T));
 
 		if(0 == p)
@@ -28,26 +35,23 @@ struct MapAllocator
 	}
 
 
-	//template <typename U, typename ...Args>
-	//void construct(U* p, Args&&... args)
-	template <typename U, typename X>
-	void construct(U* p, X x)
+	template <typename U, typename ...Args>
+	void construct(U* p, Args&&... args)
 	{
-		std::cout << __PRETTY_FUNCTION__ << std::endl;
-		//new(p) T(std::forward<Args>(args)...);
-		new(p) T(std::forward<X>(x));
+		std::cout << __PRETTY_FUNCTION__ << std::endl << std::endl;
+		new(p) U(std::forward<Args>(args)...);
 
 	}
 
 	void destroy(pointer p)
 	{
-		std::cout << __PRETTY_FUNCTION__ << std::endl;
+		std::cout << __PRETTY_FUNCTION__ << std::endl << std::endl;
 		p->~T();
 	}
 
 	void deallocate(pointer p, std::size_t n)
 	{
-		std::cout << __PRETTY_FUNCTION__ << std::endl;
+		std::cout << __PRETTY_FUNCTION__ << std::endl << std::endl;
 		std::free(p);
 	}
 };
