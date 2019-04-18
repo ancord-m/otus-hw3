@@ -4,10 +4,24 @@
 template <typename T>
 struct MapAllocator
 {
-	using value_type = T;
-	using pointer    = T*;
-	using reference  = T&;
+	using value_type 		= T;
+	using pointer    		= T*;
+	using const_pointer		= const T*;
+	using reference  		= T&;
+	using const_reference	= const T&;
 
+
+	MapAllocator(int a)
+	{
+		std::cout << a << std::endl;
+		std::cout << __PRETTY_FUNCTION__ <<  std::endl << std::endl;
+	}
+
+	template<typename U>
+	MapAllocator(const MapAllocator<U> &other)
+	{
+		std::cout << __PRETTY_FUNCTION__ <<  std::endl << std::endl;
+	}
 
 	template<typename U>
 	struct rebind
