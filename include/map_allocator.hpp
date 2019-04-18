@@ -8,6 +8,12 @@ struct MapAllocator
 	using pointer    = T*;
 	using reference  = T&;
 
+	template <typename T>
+	struct rebind
+	{
+		typedef allocator<T> other;
+	};
+
 	pointer allocate(std::size_t n)
 	{
 		std::cout << __PRETTY_FUNCTION__ << std::endl;
