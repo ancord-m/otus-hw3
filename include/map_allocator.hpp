@@ -10,10 +10,21 @@ struct MapAllocator
 	using reference  		= T&;
 	using const_reference	= const T&;
 
-
-	MapAllocator(int a)
+	template<typename U>
+	struct rebind
 	{
-		std::cout << a << std::endl;
+		typedef MapAllocator<U> other;
+	};
+
+	unsigned int elements_quantity;
+	pointer storage;
+
+
+	MapAllocator(unsigned int elements_quantity)
+	{
+		this->elements_quantity = elements_quantity;
+		storage = nullptr;
+
 		std::cout << __PRETTY_FUNCTION__ <<  std::endl << std::endl;
 	}
 
@@ -23,23 +34,33 @@ struct MapAllocator
 		std::cout << __PRETTY_FUNCTION__ <<  std::endl << std::endl;
 	}
 
-	template<typename U>
-	struct rebind
-	{
-		typedef MapAllocator<U> other;
-	};
-
 	pointer allocate(std::size_t n)
 	{
+		//if(!storage)
+	//	{
+		std::cout << storage<< std::endl;
+
+			std::cout << "Empty" << std::endl;
+
+			storage = reinterpret_cast<pointer>(std::malloc(elements_quantity * sizeof(value_type)));
+std::cout << storage<< std::endl;
+
+	//	}
+
+		return storage;
+
+		//if(!storage)
+		/*	std::cout << storage<< std::endl;
+
 		std::cout << __PRETTY_FUNCTION__ << std::endl << std::endl;
-		auto p = std::malloc(n * sizeof(T));
+		auto p = std::malloc(n * sizeof(value_type));
 
 		if(0 == p)
 		{
 			throw std::bad_alloc();
 		}
 
-		return reinterpret_cast<T*>(p);
+		return reinterpret_cast<pointer>(p);*/
 	}
 
 
