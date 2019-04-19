@@ -19,96 +19,96 @@ struct MapAllocator
 	unsigned int storage_capacity { 0 };
 	unsigned int elements_counter { 0 };
 
-	pointer storage				{ nullptr }; //const?
-	pointer storage_begin 		{ nullptr };
+	pointer storage_begin		{ nullptr }; //should be const?
 	pointer storage_end 		{ nullptr };
 	pointer storage_iterator 	{ nullptr };
 	
 
 	MapAllocator(unsigned int storage_capacity)
 	{
+		//std::cout << __PRETTY_FUNCTION__ <<  std::endl << std::endl;
 		this->storage_capacity = storage_capacity;				
-	//	std::cout << __PRETTY_FUNCTION__ <<  std::endl << std::endl;
 	}
 
 	template<typename U>
 	MapAllocator(const MapAllocator<U> &other)
 	{
+		//std::cout << __PRETTY_FUNCTION__ <<  std::endl << std::endl;
 		this->storage_capacity = other.storage_capacity;
-	//	std::cout << __PRETTY_FUNCTION__ <<  std::endl << std::endl;
 	}
 
 	pointer allocate(std::size_t n)
 	{
+		//std::cout << __PRETTY_FUNCTION__ << std::endl << std::endl;
+		
 		if(!spaceIsAllocated())
 		{
 			allocateSpaceForStorage();
-			storage_iterator = storage; 
+			initIterator();
 		}
 
 		increaseElementsQuantity();
 
-		//return storage;
-		return pointerForNextElement();
-
-
-		//ПЕРЕНЕСИ ИСКЛЮЧЕНИЕ В allocateSpaceForStorage
-		//if(!storage)
-		/*	std::cout << storage<< std::endl;
-
-		std::cout << __PRETTY_FUNCTION__ << std::endl << std::endl;
-		auto p = std::malloc(n * sizeof(value_type));
-
-		if(0 == p)
-		{
-			throw std::bad_alloc();
-		}
-
-		return reinterpret_cast<pointer>(p);*/
+		return placePointerForNewElement();
 	}
 
 
 	template <typename U, typename ...Args>
 	void construct(U* p, Args&&... args)
 	{
-	//	std::cout << __PRETTY_FUNCTION__ << std::endl << std::endl;
+		//std::cout << __PRETTY_FUNCTION__ << std::endl << std::endl;		
 		new(p) U(std::forward<Args>(args)...);
 	}
 
 	void destroy(pointer p)
 	{
-		std::cout << __PRETTY_FUNCTION__ << std::endl << std::endl;
+		//std::cout << __PRETTY_FUNCTION__ << std::endl << std::endl;
 		p->~T();
 	}
 
 	void deallocate(pointer p, std::size_t n)
 	{
-		std::cout << __PRETTY_FUNCTION__ << std::endl << std::endl;
-
+		//std::cout << __PRETTY_FUNCTION__ << std::endl << std::endl;
 		decreaseElementsQuantity();
 
 		if(noElementsInStorage() & spaceIsAllocated())
 		{
-			std::free(storage);
+			std::free(storage_begin);
 		}
 	}
 
 	private:
-		bool spaceIsAllocated(void)
-		{
-			return storage != nullptr;
-		}
-
 		void allocateSpaceForStorage(void)
 		{
-			//кдиать bad_alloc
-			storage = reinterpret_cast<pointer>(std::malloc(storage_capacity * sizeof(value_type)));
+			auto p = std::malloc(storage_capacity * sizeof(value_type));
+
+			if(0 == p)
+			{
+				throw std::bad_alloc();
+			}
+
+			storage_begin = reinterpret_cast<pointer>(p);
+			storage_end   = storage_begin + storage_capacity;
 		}
 
-		pointer pointerForNextElement(void)
+		pointer placePointerForNewElement(void)
 		{
-			//можно бросать исключение, если storage_iterator == storage_end
+			if(storage_iterator == storage_end)
+			{
+				throw std::out_of_range("End of allocated memory was reached");
+			}
+
 			return storage_iterator++;
+		}
+
+		void initIterator(void)
+		{
+			storage_iterator = storage_begin;
+		}
+
+		bool spaceIsAllocated(void)
+		{
+			return storage_begin != nullptr;
 		}
 
 		void increaseElementsQuantity(void)
@@ -124,11 +124,5 @@ struct MapAllocator
 		bool noElementsInStorage(void)
 		{
 			return elements_counter == 0;
-		}
-
-		template<typename C>
-		void printer(std::string msg, C content)
-		{
-			std::cout << msg + ": " << content << std::endl;
-		}
+		}		
 };
