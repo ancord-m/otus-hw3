@@ -11,6 +11,7 @@ int main(int argc, char *argv[])
 
 	m.insert(std::pair<const int, int>{2, 3});
 	m.insert(std::pair<const int, int>{4, 6});
+	m.insert(std::pair<const int, int>{5, 7});
 
 	return 0;
 }

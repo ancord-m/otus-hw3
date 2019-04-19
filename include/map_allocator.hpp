@@ -16,39 +16,43 @@ struct MapAllocator
 		typedef MapAllocator<U> other;
 	};
 
-	unsigned int elements_quantity;
-	pointer storage;
+	unsigned int storage_capacity { 0 };
+	unsigned int elements_counter { 0 };
 
+	pointer storage				{ nullptr }; //const?
+	pointer storage_begin 		{ nullptr };
+	pointer storage_end 		{ nullptr };
+	pointer storage_iterator 	{ nullptr };
+	
 
-	MapAllocator(unsigned int elements_quantity)
+	MapAllocator(unsigned int storage_capacity)
 	{
-		this->elements_quantity = elements_quantity;
-		storage = nullptr;
-
-		std::cout << __PRETTY_FUNCTION__ <<  std::endl << std::endl;
+		this->storage_capacity = storage_capacity;				
+	//	std::cout << __PRETTY_FUNCTION__ <<  std::endl << std::endl;
 	}
 
 	template<typename U>
 	MapAllocator(const MapAllocator<U> &other)
 	{
-		std::cout << __PRETTY_FUNCTION__ <<  std::endl << std::endl;
+		this->storage_capacity = other.storage_capacity;
+	//	std::cout << __PRETTY_FUNCTION__ <<  std::endl << std::endl;
 	}
 
 	pointer allocate(std::size_t n)
 	{
-		//if(!storage)
-	//	{
-		std::cout << storage<< std::endl;
+		if(!spaceIsAllocated())
+		{
+			allocateSpaceForStorage();
+			storage_iterator = storage; 
+		}
 
-			std::cout << "Empty" << std::endl;
+		increaseElementsQuantity();
 
-			storage = reinterpret_cast<pointer>(std::malloc(elements_quantity * sizeof(value_type)));
-std::cout << storage<< std::endl;
+		//return storage;
+		return pointerForNextElement();
 
-	//	}
 
-		return storage;
-
+		//ПЕРЕНЕСИ ИСКЛЮЧЕНИЕ В allocateSpaceForStorage
 		//if(!storage)
 		/*	std::cout << storage<< std::endl;
 
@@ -67,9 +71,8 @@ std::cout << storage<< std::endl;
 	template <typename U, typename ...Args>
 	void construct(U* p, Args&&... args)
 	{
-		std::cout << __PRETTY_FUNCTION__ << std::endl << std::endl;
+	//	std::cout << __PRETTY_FUNCTION__ << std::endl << std::endl;
 		new(p) U(std::forward<Args>(args)...);
-
 	}
 
 	void destroy(pointer p)
@@ -81,6 +84,51 @@ std::cout << storage<< std::endl;
 	void deallocate(pointer p, std::size_t n)
 	{
 		std::cout << __PRETTY_FUNCTION__ << std::endl << std::endl;
-		std::free(p);
+
+		decreaseElementsQuantity();
+
+		if(noElementsInStorage() & spaceIsAllocated())
+		{
+			std::free(storage);
+		}
 	}
+
+	private:
+		bool spaceIsAllocated(void)
+		{
+			return storage != nullptr;
+		}
+
+		void allocateSpaceForStorage(void)
+		{
+			//кдиать bad_alloc
+			storage = reinterpret_cast<pointer>(std::malloc(storage_capacity * sizeof(value_type)));
+		}
+
+		pointer pointerForNextElement(void)
+		{
+			//можно бросать исключение, если storage_iterator == storage_end
+			return storage_iterator++;
+		}
+
+		void increaseElementsQuantity(void)
+		{
+			++elements_counter;
+		}
+
+		void decreaseElementsQuantity(void)
+		{
+			--elements_counter;
+		}
+
+		bool noElementsInStorage(void)
+		{
+			return elements_counter == 0;
+		}
+
+		template<typename C>
+		void printer(std::string msg, C content)
+		{
+			std::cout << msg + ": " << content << std::endl;
+		}
 };

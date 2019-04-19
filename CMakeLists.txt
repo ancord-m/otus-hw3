@@ -17,7 +17,8 @@ add_executable(allocator ${SRC_LIST})
 set_target_properties(allocator PROPERTIES
 	CXX_STANDARD 14
 	CXX_STANDARD_REQUIRED ON
-	COMPILE_OPTIONS -Wpedantic;-Wall;-Wextra
+	#COMPILE_OPTIONS "-Wpedantic;-Wall;-Wextra;"
+	COMPILE_OPTIONS "-Wpedantic;-Wextra;-g;"
 )
 
 target_include_directories(allocator PRIVATE ${INCLUDE_DIR})
