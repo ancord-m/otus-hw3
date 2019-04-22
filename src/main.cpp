@@ -2,6 +2,7 @@
 #include <map>
 #include <vector>
 #include "map_allocator.h"
+#include "list.h"
 
 #define MAX_ELEMENTS 10
 
@@ -43,7 +44,7 @@ void printMap(Map &m)
 
 int main(int argc, char *argv[])
 {
-	auto std_alloc_map = std::map<int, int> {};
+	/*auto std_alloc_map = std::map<int, int> {};
 
 	fillMap(std_alloc_map);
 
@@ -56,11 +57,11 @@ int main(int argc, char *argv[])
 
 
 	printMap(std_alloc_map);
-	printMap(own_alloc_map);
+	printMap(own_alloc_map);*/
 
- /*   
-*/
+	List<int> l;
 
+	 l.push();
 
 	return 0;
 }
