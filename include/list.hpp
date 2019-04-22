@@ -1,12 +1,22 @@
 #include <memory>
 #include <iostream>
 
+template <typename T>
+struct ListNode
+{
+	T value;
+	ListNode<T>* next;
+};
+
 template <typename T, typename Allocator = std::allocator<T>>
 class List
 {
-	typedef Allocator allocator_type;
-	Allocator a;
-	typename allocator_type::pointer p;
+	using allocator_type = Allocator;
+	using pointer = typename allocator_type::pointer;
+
+	//typedef Allocator allocator_type;
+	allocator_type a;
+	pointer p;
 public:
 	List() : a( Allocator() )
 	{
