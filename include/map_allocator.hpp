@@ -39,7 +39,9 @@ struct MapAllocator
 
 	pointer allocate(std::size_t n)
 	{
-		//std::cout << __PRETTY_FUNCTION__ << std::endl << std::endl;
+		std::cout << __PRETTY_FUNCTION__ << std::endl << std::endl;
+
+		std::cout << sizeof(value_type) << std::endl;
 		
 		if(!spaceIsAllocated())
 		{
@@ -68,7 +70,7 @@ struct MapAllocator
 
 	void deallocate(pointer p, std::size_t n)
 	{
-		//std::cout << __PRETTY_FUNCTION__ << std::endl << std::endl;
+		std::cout << __PRETTY_FUNCTION__ << std::endl << std::endl;
 		decreaseElementsQuantity();
 
 		if(noElementsInStorage() & spaceIsAllocated())

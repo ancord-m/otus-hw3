@@ -59,9 +59,10 @@ int main(int argc, char *argv[])
 	printMap(std_alloc_map);
 	printMap(own_alloc_map);*/
 
-	List<int> l;
+	List<int, MapAllocator<int>> l( MapAllocator<int> { 10 });
+	//List<int, MapAllocator<int> > l ( MapAllocator<int> { 10 } );
 
-	 l.push();
+	// l.push();
 
 	return 0;
 }
