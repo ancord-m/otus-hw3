@@ -24,16 +24,21 @@ struct MapAllocator
 	pointer storage_iterator 	{ nullptr };
 	
 
+	MapAllocator()
+	{
+		std::cout << __PRETTY_FUNCTION__ <<  std::endl << std::endl;
+	}
+
 	MapAllocator(unsigned int storage_capacity)
 	{
-		//std::cout << __PRETTY_FUNCTION__ <<  std::endl << std::endl;
+		std::cout << __PRETTY_FUNCTION__ <<  std::endl << std::endl;
 		this->storage_capacity = storage_capacity;				
 	}
 
 	template<typename U>
 	MapAllocator(const MapAllocator<U> &other)
 	{
-		//std::cout << __PRETTY_FUNCTION__ <<  std::endl << std::endl;
+		std::cout << __PRETTY_FUNCTION__ <<  std::endl << std::endl;
 		this->storage_capacity = other.storage_capacity;
 	}
 

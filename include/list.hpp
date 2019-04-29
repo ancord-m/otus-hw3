@@ -17,7 +17,8 @@ struct List
 	using reference = value_type&;
 	using const_reference = const value_type&;
 	//почему не  value_type *?
-	using pointer = typename std::allocator_traits<Allocator>::pointer;
+	//using pointer = typename std::allocator_traits<Allocator>::pointer;
+	using pointer = value_type *;
 	using const_pointer = typename std::allocator_traits<Allocator>::const_pointer;
 
 	//ниже две строки идентичны
@@ -26,6 +27,7 @@ struct List
 
 	//typedef Allocator allocator_type;
 	allocator_type a;
+	ListNodeAllocator b;
 	pointer p;
 
 
@@ -35,21 +37,24 @@ struct List
 	}
 */
 
-	List(const allocator_type &alc) : a( alc )
+	List(const allocator_type &alc) //: a (alc)
 	{
-		//p = a.allocate(1);
-		p = ListNodeAllocator::allocate(1);
+
+		p = b.allocate(1);
+		//p = ListNodeAllocator::allocate(1);
+
+
 	}
 
 	~List()
 	{
-		//a.deallocate(p, 1);
-		ListNodeAllocator::deallocate(p, 1);
+		b.deallocate(p, 1);
+		//ListNodeAllocator::deallocate(p, 1);
 	}
 
 	decltype(auto) push()
 	{
-	//	p = a.allocate(1);
+		p = b.allocate(1);
 	//	return p;
 	}
 };
