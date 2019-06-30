@@ -16,6 +16,9 @@ struct MapAllocator
 		typedef MapAllocator<U> other;
 	};
 
+	template<typename U>
+	using rebind_alloc		= typename MapAllocator::template rebind<U>::other;
+
 	unsigned int storage_capacity { 0 };
 	unsigned int elements_counter { 0 };
 
@@ -42,11 +45,22 @@ struct MapAllocator
 		this->storage_capacity = other.storage_capacity;
 	}
 
+
+	MapAllocator(const MapAllocator& other)
+	{
+		this->storage_capacity = other.storage_capacity;
+		std::cout << "copy ctor" << std::endl;
+		std::cout << __PRETTY_FUNCTION__ <<  std::endl << std::endl;
+	}
+
+	~MapAllocator()
+	{
+		std::cout << __PRETTY_FUNCTION__ <<  std::endl << std::endl;
+	}
+
 	pointer allocate(std::size_t n)
 	{
 		std::cout << __PRETTY_FUNCTION__ << std::endl << std::endl;
-
-		std::cout << sizeof(value_type) << std::endl;
 		
 		if(!spaceIsAllocated())
 		{
@@ -63,13 +77,13 @@ struct MapAllocator
 	template <typename U, typename ...Args>
 	void construct(U* p, Args&&... args)
 	{
-		//std::cout << __PRETTY_FUNCTION__ << std::endl << std::endl;		
+		std::cout << __PRETTY_FUNCTION__ << std::endl << std::endl;		
 		new(p) U(std::forward<Args>(args)...);
 	}
 
 	void destroy(pointer p)
 	{
-		//std::cout << __PRETTY_FUNCTION__ << std::endl << std::endl;
+		std::cout << __PRETTY_FUNCTION__ << std::endl << std::endl;
 		p->~T();
 	}
 

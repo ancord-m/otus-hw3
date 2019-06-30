@@ -44,25 +44,46 @@ void printMap(Map &m)
 
 int main(int argc, char *argv[])
 {
-	/*auto std_alloc_map = std::map<int, int> {};
+
+	/*auto own_alloc_map = 
+		std::map<int, int, std::less<int>, MapAllocator<std::pair<const int, int>>>
+			{  MapAllocator<std::pair<const int, int>> {MAX_ELEMENTS} };
+
+	own_alloc_map.insert(std::make_pair(1, factorial(1)));;
+
+	/*
+	auto std_alloc_map = std::map<int, int> {};
 
 	fillMap(std_alloc_map);
-
 
 	auto own_alloc_map = 
 		std::map<int, int, std::less<int>, MapAllocator<std::pair<const int, int>>>
 			{  MapAllocator<std::pair<const int, int>> {MAX_ELEMENTS} };
+
+	std::cout << "begin filling map" << std::endl;
 	
 	fillMap(own_alloc_map);
 
 
 	printMap(std_alloc_map);
-	printMap(own_alloc_map);*/
-
-	List<int, MapAllocator<int>> l( MapAllocator<int> { 9 });
+	printMap(own_alloc_map);
+	*/
+	
+	//List<int, MapAllocator<int>> l( MapAllocator<int> { 9 });
 	//List<int, MapAllocator<int> > l ( MapAllocator<int> { 10 } );
 
 	// l.push();
+
+	List<int, MapAllocator<int>> list { MapAllocator<int> {10} };
+
+	
+	list.test();
+
+	auto elm = list.push(30);
+
+	std::cout << elm->value << std::endl;
+
+
 
 	return 0;
 }
