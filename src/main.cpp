@@ -68,8 +68,7 @@ int main(int argc, char *argv[])
 
 	auto own_alloc_map = 
 		std::map<int, int, std::less<int>, MapAllocator<std::pair<const int, int>>>
-		//	(  MapAllocator<std::pair<const int, int>> { MAX_ELEMENTS } );
-			(  MapAllocator<std::pair<const int, int>> ( MAX_ELEMENTS) );
+			(  MapAllocator<std::pair<const int, int>> { MAX_ELEMENTS } );
 
 	fillMap(own_alloc_map);
 

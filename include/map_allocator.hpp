@@ -32,9 +32,7 @@ struct MapAllocator
 	MapAllocator() = default;
 
 	MapAllocator(unsigned int storage_capacity)
-	//MapAllocator(std::initializer_list<int> l)
 	{							
-		//this->storage_capacity = *l.begin();
 		this->storage_capacity = storage_capacity;
 	}
 
