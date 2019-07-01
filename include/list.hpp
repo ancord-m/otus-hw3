@@ -21,7 +21,7 @@ struct ListNode
 template <typename T, typename Allocator = std::allocator<T>>
 class List
 {
-	using size_type = std::size_t;
+	using size_type 		= std::size_t;
 	using value_type		= ListNode<T>;
 
 	using allocator_type 	= Allocator;
@@ -29,11 +29,7 @@ class List
 							= typename std::allocator_traits<allocator_type>::template rebind_alloc<value_type>;
 
 	using pointer 			= typename std::allocator_traits<listnode_allocator_type>::pointer;
-	//using const_pointer 	= typename std::allocator_traits<listnode_allocator_type>::const_pointer;
 
-	
-	//using reference = value_type&;
-	//using const_reference = const value_type&;
 	static const size_type MEMORY_FOR_ONE_NODE = 1;
 	
 	listnode_allocator_type ListNodeAllocator;
@@ -44,8 +40,6 @@ public:
 
 	explicit List(const allocator_type& a = allocator_type{} )
 	{
-		std::cout << __PRETTY_FUNCTION__ <<  std::endl << std::endl;
-
 		head_node 			= nullptr;
 		previous_node 		= nullptr;
 		ListNodeAllocator 	= listnode_allocator_type{a};
@@ -53,25 +47,18 @@ public:
 
 	~List()
 	{
-		std::cout << __PRETTY_FUNCTION__ <<  std::endl << std::endl;
-
-		pointer next_to_be_deleted;
-		
-		/*for(auto n : *this)
-		{
-			next_to_be_deleted = n->next;
-
-			ListNodeAllocator.destroy(&n);
-			ListNodeAllocator.deallocate(&n, MEMORY_FOR_ONE_NODE);
-		}	*/
+		/*
+		я так и не понял, почему это работает.
+		по сути, под &(*it) кроется конкретный узел вместе с указателем next на следующий.
+		вопрос: каким образом мой оператор++ у итератора контейнера List обеспечивает 
+		корректный переход на next ListNode ПОСЛЕ вызова free стандартным аллокатором ???
+		*/
 
 		for(auto it = this->begin(); it != this->end(); ++it)
 		{
 			ListNodeAllocator.destroy(&(*it));
 			ListNodeAllocator.deallocate(&(*it), MEMORY_FOR_ONE_NODE);
-		}
-
-	
+		}	
 	}
 
 	void push(T& value)
@@ -96,11 +83,14 @@ public:
 		}
 	}
 
+	/* все для обхода контейнера */
+
 	class iterator : public std::iterator<std::forward_iterator_tag, value_type>
 	{
 		value_type* current_pointed_value;
 
 		public:
+			
 			iterator() : current_pointed_value(nullptr) { };
 
 			explicit iterator(value_type* cv) : current_pointed_value(cv) { };

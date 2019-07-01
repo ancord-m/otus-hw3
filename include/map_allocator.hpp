@@ -25,46 +25,32 @@ struct MapAllocator
 	unsigned int storage_capacity { 0 };
 	unsigned int elements_counter { 0 };
 
-	pointer storage_begin		{ nullptr }; //should be const?
+	pointer storage_begin		{ nullptr };
 	pointer storage_end 		{ nullptr };
 	pointer storage_iterator 	{ nullptr };
 	
-
-	MapAllocator()
-	{
-		std::cout << __PRETTY_FUNCTION__ <<  std::endl << std::endl;
-	}
+	MapAllocator() = default;
 
 	MapAllocator(unsigned int storage_capacity)
-	{
-		std::cout << __PRETTY_FUNCTION__ <<  std::endl << std::endl;
+	{		
 		this->storage_capacity = storage_capacity;				
 	}
 
 	template<typename U>
 	MapAllocator(const MapAllocator<U> &other)
 	{
-		std::cout << __PRETTY_FUNCTION__ <<  std::endl << std::endl;
 		this->storage_capacity = other.storage_capacity;
 	}
-
 
 	MapAllocator(const MapAllocator& other)
 	{
 		this->storage_capacity = other.storage_capacity;
-		std::cout << "copy ctor" << std::endl;
-		std::cout << __PRETTY_FUNCTION__ <<  std::endl << std::endl;
 	}
 
-	~MapAllocator()
-	{
-		std::cout << __PRETTY_FUNCTION__ <<  std::endl << std::endl;
-	}
+	~MapAllocator()	= default;
 
 	pointer allocate(size_type n = DEFAULT_ELEMENTS_QUANTITY)
 	{
-		std::cout << __PRETTY_FUNCTION__ << std::endl << std::endl;
-
 		if(!spaceIsAllocated())
 		{
 			allocateSpaceForStorage();
@@ -76,23 +62,19 @@ struct MapAllocator
 		return getPointerToNextFreeMemoryCell();
 	}
 
-
 	template <typename U, typename ...Args>
 	void construct(U* p, Args&&... args)
 	{
-		std::cout << __PRETTY_FUNCTION__ << std::endl << std::endl;		
 		new(p) U(std::forward<Args>(args)...);
 	}
 
 	void destroy(pointer p)
 	{
-		std::cout << __PRETTY_FUNCTION__ << std::endl << std::endl;
 		p->~T();
 	}
 
 	void deallocate(pointer p, size_type n = DEFAULT_ELEMENTS_QUANTITY)
 	{
-		std::cout << __PRETTY_FUNCTION__ << std::endl << std::endl;
 		decreaseElementsQuantity();
 
 		if(noElementsInStorage() & spaceIsAllocated())

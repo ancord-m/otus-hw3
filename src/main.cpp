@@ -1,14 +1,11 @@
 #include <iostream>
 #include <map>
 #include <vector>
+
 #include "map_allocator.h"
 #include "list.h"
-#include <typeinfo>
 
 #define MAX_ELEMENTS 10
-
-//что значит расширяемость аллокатора?
-//что такое совместимость с stl контейнерами?
 
 long factorial(int value)
 {
@@ -26,7 +23,7 @@ long factorial(int value)
 }
 
 template<typename Map>
-void fillMap(Map &m)
+void fillMap(Map& m)
 {
 	for(int i = 0; i < MAX_ELEMENTS; ++i)
 	{
@@ -43,65 +40,53 @@ void printMap(Map &m)
     }
 }
 
+template<typename Container>
+void fillContainer(Container &c)
+{
+	for(auto i = 0; i < MAX_ELEMENTS; ++i)
+	{
+		c.push(i);
+	}
+}
+
+template<typename Container>
+void printContainer(Container &c)
+{
+	for(auto elm : c)
+	{
+		std::cout << elm << std::endl;
+	}
+}
+
 int main(int argc, char *argv[])
 {
+	/* map */
 
-	/*auto own_alloc_map = 
-		std::map<int, int, std::less<int>, MapAllocator<std::pair<const int, int>>>
-			{  MapAllocator<std::pair<const int, int>> {MAX_ELEMENTS} };
-
-	own_alloc_map.insert(std::make_pair(1, factorial(1)));;
-
-	/*
-	auto std_alloc_map = std::map<int, int> {};
+	auto std_alloc_map = std::map<int, int> { };
 
 	fillMap(std_alloc_map);
 
 	auto own_alloc_map = 
 		std::map<int, int, std::less<int>, MapAllocator<std::pair<const int, int>>>
-			{  MapAllocator<std::pair<const int, int>> {MAX_ELEMENTS} };
+			{  MapAllocator<std::pair<const int, int>> { MAX_ELEMENTS } };
 
-	std::cout << "begin filling map" << std::endl;
-	
 	fillMap(own_alloc_map);
-
 
 	printMap(std_alloc_map);
 	printMap(own_alloc_map);
-	*/
+
+	/* int container */
 	
-	//List<int, MapAllocator<int>> l( MapAllocator<int> { 9 });
-	//List<int, MapAllocator<int> > l ( MapAllocator<int> { 10 } );
+	List<int> std_alloc_list;
 
-	// l.push();
+	fillContainer(std_alloc_list);	
 
-	List<int, MapAllocator<int>> list { MapAllocator<int> {10} };
-	//List<int> list;
-	
-//	list.push(30);
+	List<int, MapAllocator<int>> own_alloc_list { MapAllocator<int> { MAX_ELEMENTS } };
 
-	std::cout << "Pushing" << std::endl;
+	fillContainer(own_alloc_list);
 
-	int value ;
-	for(int i = 0; i < 10; ++i)
-	{
-		value = i * 10 + 40;
-		std::cout << value << std::endl;
-		list.push(i * 10 + 40);
-	}
-	std::cout << "Printing" << std::endl;
-
-	int count = 0; 
-
-	List<int,  MapAllocator<int>>::iterator it;
-
-	for(auto elm : list)
-	//for(it = list.begin(); it != list.end(); ++it)
-	{
-		std::cout << elm << std::endl;
-		//std::cout << *it << std::endl;
-		count++;
-	}	
+	printContainer(std_alloc_list);
+	printContainer(own_alloc_list);	
 
 	return 0;
 }
