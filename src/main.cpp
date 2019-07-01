@@ -3,6 +3,7 @@
 #include <vector>
 #include "map_allocator.h"
 #include "list.h"
+#include <typeinfo>
 
 #define MAX_ELEMENTS 10
 
@@ -75,15 +76,32 @@ int main(int argc, char *argv[])
 	// l.push();
 
 	List<int, MapAllocator<int>> list { MapAllocator<int> {10} };
-
+	//List<int> list;
 	
-	list.test();
+//	list.push(30);
 
-	auto elm = list.push(30);
+	std::cout << "Pushing" << std::endl;
 
-	std::cout << elm->value << std::endl;
+	int value ;
+	for(int i = 0; i < 10; ++i)
+	{
+		value = i * 10 + 40;
+		std::cout << value << std::endl;
+		list.push(i * 10 + 40);
+	}
+	std::cout << "Printing" << std::endl;
 
+	int count = 0; 
 
+	List<int,  MapAllocator<int>>::iterator it;
+
+	for(auto elm : list)
+	//for(it = list.begin(); it != list.end(); ++it)
+	{
+		std::cout << elm << std::endl;
+		//std::cout << *it << std::endl;
+		count++;
+	}	
 
 	return 0;
 }

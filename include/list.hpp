@@ -1,5 +1,6 @@
 #include <memory>
 #include <iostream>
+#include <iterator>
 
 template <typename T>
 struct ListNode
@@ -7,78 +8,127 @@ struct ListNode
 	T value;
 	ListNode<T>* next;
 
-	ListNode(const T& v) : value(v) { };
+	ListNode(const T& v) : value(v), next(nullptr) { };
+
+	friend std::ostream& operator<<(std::ostream& out, const ListNode<T>& node) 
+	{
+		out << node.value;
+
+		return out;
+	};
 };
 
 template <typename T, typename Allocator = std::allocator<T>>
-struct List
+class List
 {
-	using allocator_type = Allocator;
 	using size_type = std::size_t;
-	using value_type = ListNode<T>;
-	using reference = value_type&;
-	using const_reference = const value_type&;
-	//почему не  value_type *? потому что получаем доступ через интерфейсный класс свойств allocator_traits
-	using pointer = typename std::allocator_traits<Allocator>::pointer;
-	using const_pointer = typename std::allocator_traits<Allocator>::const_pointer;
+	using value_type		= ListNode<T>;
 
-	using node_allocator_type = typename std::allocator_traits<Allocator>::template rebind_alloc<value_type>;
-	/*
-	строка выше идентична нижеследующему:
-	using ListNodeAllocator = typename allocator_type::template rebind<value_type>::other;
-	перевод:   MapAllocator    ::  template rebind<ListNode<int>>  ::   MapAllocator<ListNode<int>
-	         'allocator_type'       'struct rebind'                        'other'
-	*/
+	using allocator_type 	= Allocator;
+	using listnode_allocator_type 
+							= typename std::allocator_traits<allocator_type>::template rebind_alloc<value_type>;
+
+	using pointer 			= typename std::allocator_traits<listnode_allocator_type>::pointer;
+	//using const_pointer 	= typename std::allocator_traits<listnode_allocator_type>::const_pointer;
 
 	
-	node_allocator_type ListNodeAllocator;
-	pointer p;
+	//using reference = value_type&;
+	//using const_reference = const value_type&;
+	static const size_type MEMORY_FOR_ONE_NODE = 1;
+	
+	listnode_allocator_type ListNodeAllocator;
+	pointer head_node;
+	pointer previous_node;
+	
+public:
 
-	explicit List(const allocator_type& a)
+	explicit List(const allocator_type& a = allocator_type{} )
 	{
 		std::cout << __PRETTY_FUNCTION__ <<  std::endl << std::endl;
-		
-		ListNodeAllocator = node_allocator_type{a};
-		
-		//*al = ListNodeAllocator{a};
-	}
 
-
-	/*List(const allocator_type &alc) //: a (alc)
-	{
-
-		p = b.allocate(1);
-		//p = ListNodeAllocator::allocate(1);
-
-
-	}*/
-	void test()
-	{
-		std::cout << "tag" << std::endl;
-		std::cout << ListNodeAllocator.storage_capacity << std::endl;
+		head_node 			= nullptr;
+		previous_node 		= nullptr;
+		ListNodeAllocator 	= listnode_allocator_type{a};
 	}
 
 	~List()
 	{
 		std::cout << __PRETTY_FUNCTION__ <<  std::endl << std::endl;
-	//	b.deallocate(p, 1);
-		//ListNodeAllocator::deallocate(p, 1);
+
+		pointer next_to_be_deleted;
+		
+		/*for(auto n : *this)
+		{
+			next_to_be_deleted = n->next;
+
+			ListNodeAllocator.destroy(&n);
+			ListNodeAllocator.deallocate(&n, MEMORY_FOR_ONE_NODE);
+		}	*/
+
+		for(auto it = this->begin(); it != this->end(); ++it)
+		{
+			ListNodeAllocator.destroy(&(*it));
+			ListNodeAllocator.deallocate(&(*it), MEMORY_FOR_ONE_NODE);
+		}
+
+	
 	}
 
-	decltype(auto) push(T&& value)
+	void push(T& value)
 	{
-		auto p = ListNodeAllocator.allocate(1);
-		ListNodeAllocator.construct(p, value);
-		return p;
+		push(std::move(value));
+	}
+
+	void push(T&& value)
+	{
+		auto new_list_node = ListNodeAllocator.allocate(MEMORY_FOR_ONE_NODE);
+		ListNodeAllocator.construct(new_list_node, value);
+		
+		if(head_node == nullptr)
+		{
+			head_node = new_list_node;
+			previous_node = head_node;
+		}
+		else 
+		{
+			previous_node->next = new_list_node;
+			previous_node		= new_list_node;
+		}
+	}
+
+	class iterator : public std::iterator<std::forward_iterator_tag, value_type>
+	{
+		value_type* current_pointed_value;
+
+		public:
+			iterator() : current_pointed_value(nullptr) { };
+
+			explicit iterator(value_type* cv) : current_pointed_value(cv) { };
+
+			iterator& operator++ () 
+			{
+				current_pointed_value = current_pointed_value->next;
+				return *this;
+			}
+
+			typename std::iterator_traits<iterator>::reference operator* (void)
+			{
+				return *current_pointed_value;
+			}
+
+			bool operator!= (const iterator& other)
+			{
+				return this->current_pointed_value != other.current_pointed_value;
+			}
+	};
+
+	iterator begin(void)
+	{
+		return iterator(head_node);
+	}
+
+	iterator end(void) 
+	{
+		return iterator();
 	}
 };
-
-
-/*
-Как бы я сделал Лист без аллокатора:
-1. В конструкторе провел бы только инициализацию
-2. Ввел бы метод reserve или работал бы без него
-3. В методе push выделял бы память под новый элемент или 
-просто складывал бы его в готовую ячейку. Тут нужен указатель
-4. В ходе обхода смещал бы указатель по хранилищу и вытаскивал элемент. Нужен итератор
-*/

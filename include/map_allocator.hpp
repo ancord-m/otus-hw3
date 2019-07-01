@@ -4,6 +4,7 @@
 template <typename T>
 struct MapAllocator
 {
+	using size_type			= std::size_t;
 	using value_type 		= T;
 	using pointer    		= T*;
 	using const_pointer		= const T*;
@@ -18,6 +19,8 @@ struct MapAllocator
 
 	template<typename U>
 	using rebind_alloc		= typename MapAllocator::template rebind<U>::other;
+
+	static const size_type DEFAULT_ELEMENTS_QUANTITY = 1;
 
 	unsigned int storage_capacity { 0 };
 	unsigned int elements_counter { 0 };
@@ -58,10 +61,10 @@ struct MapAllocator
 		std::cout << __PRETTY_FUNCTION__ <<  std::endl << std::endl;
 	}
 
-	pointer allocate(std::size_t n)
+	pointer allocate(size_type n = DEFAULT_ELEMENTS_QUANTITY)
 	{
 		std::cout << __PRETTY_FUNCTION__ << std::endl << std::endl;
-		
+
 		if(!spaceIsAllocated())
 		{
 			allocateSpaceForStorage();
@@ -70,7 +73,7 @@ struct MapAllocator
 
 		increaseElementsQuantity();
 
-		return placePointerForNewElement();
+		return getPointerToNextFreeMemoryCell();
 	}
 
 
@@ -87,7 +90,7 @@ struct MapAllocator
 		p->~T();
 	}
 
-	void deallocate(pointer p, std::size_t n)
+	void deallocate(pointer p, size_type n = DEFAULT_ELEMENTS_QUANTITY)
 	{
 		std::cout << __PRETTY_FUNCTION__ << std::endl << std::endl;
 		decreaseElementsQuantity();
@@ -112,7 +115,7 @@ struct MapAllocator
 			storage_end   = storage_begin + storage_capacity;
 		}
 
-		pointer placePointerForNewElement(void)
+		pointer getPointerToNextFreeMemoryCell(void)
 		{
 			if(storage_iterator == storage_end)
 			{
